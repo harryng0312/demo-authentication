@@ -4,4 +4,4 @@
 /gradle/
 /**/build
 /db/**
-.DS_Store
+**/.DS_Store
