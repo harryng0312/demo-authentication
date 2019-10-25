@@ -82,7 +82,7 @@ const Authenticator = {
             };
             // var shared_key = {"kty":"oct", "k":"GawgguFyGrWKav7AX4VKUg"};
             // shared_key = crypto.subtle.importKey("jwk", shared_key, {name: "AES-KW"}, true, ["wrapKey", "unwrapKey"]);
-            let unameEnc = await HCrypto.encrypt(param, uname);
+            let unameEnc = await HCrypto.encryptJwt(param, uname);
             console.log("Username enc:" + unameEnc);
         }).catch(function (err) {
             console.log(err);
