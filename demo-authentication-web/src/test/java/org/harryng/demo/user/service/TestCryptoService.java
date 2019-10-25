@@ -21,6 +21,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.*;
+import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
@@ -95,7 +96,7 @@ public class TestCryptoService {
     }
 
     @Test
-    public void testPBKDF2() throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public void testPBKDF2() throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
         final String passwd = "1234";
         final int iterator = 10240;
         final int keyLen = 128;
@@ -108,5 +109,15 @@ public class TestCryptoService {
         logger.info("Secret Key:" + Base64.getEncoder().encodeToString(secretKey.getEncoded()));
         logger.info("Gen key in: " + (finish - start));
         logger.info("=====");
+        Cipher aesCipher = Cipher.getInstance("AES/CTR/NoPadding");
+        byte[] ivBin = {0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 1};
+        AlgorithmParameterSpec algorithmParameterSpec = new IvParameterSpec(ivBin);
+        aesCipher.init(Cipher.ENCRYPT_MODE, secretKey, algorithmParameterSpec);
+        logger.info("=====");
+        String dataStr = "abcdefghijklmnopqrstuvwxyz0123456789";
+        logger.info("Crypted data:" + Base64.getEncoder().encodeToString(aesCipher.doFinal(dataStr.getBytes())));
     }
 }

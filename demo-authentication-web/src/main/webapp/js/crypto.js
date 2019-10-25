@@ -45,8 +45,16 @@ const HCrypto = {
         const deriveKey = this.subtle.deriveKey(param, baseKey, derivedKeyType, true, keyUsages);
         return deriveKey;
     },
+    encrypt: function (param, key, data) {
+        const encryptor = this.subtle.encrypt(param, key, data);
+        return encryptor;
+    },
+    decrypt: function (param, key, data) {
+        const decryptor = this.subtle.decrypt(param, key, data);
+        return decryptor;
+    },
     // encrypt decrypt functions
-    encrypt: function (param, strPlain) {
+    encryptJwt: function (param, strPlain) {
         let cryptographer = new Jose.WebCryptographer();
         cryptographer.setKeyEncryptionAlgorithm(param.keyEncryptionAlg);
         cryptographer.setContentEncryptionAlgorithm(param.contentEncryptionAlg);
@@ -58,7 +66,7 @@ const HCrypto = {
         let encrypter = new Jose.JoseJWE.Encrypter(cryptographer, sharedKey);
         return encrypter.encrypt(strPlain);
     },
-    decrypt: function (param, strCrypted) {
+    decryptJwt: function (param, strCrypted) {
         let sharedKey = param.sharedKey;
         let cryptographer = new Jose.WebCryptographer();
         cryptographer.setKeyEncryptionAlgorithm(param.keyEncryptionAlg);
