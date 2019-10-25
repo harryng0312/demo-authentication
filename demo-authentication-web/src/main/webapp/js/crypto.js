@@ -44,5 +44,26 @@ const HCrypto = {
     deriveKey: function (param, baseKey, derivedKeyType, keyUsages) {
         const deriveKey = this.subtle.deriveKey(param, baseKey, derivedKeyType, true, keyUsages);
         return deriveKey;
+    },
+    // encrypt decrypt functions
+    encrypt: function (param, strPlain) {
+        let cryptographer = new Jose.WebCryptographer();
+        cryptographer.setKeyEncryptionAlgorithm(param.keyEncryptionAlg);
+        cryptographer.setContentEncryptionAlgorithm(param.contentEncryptionAlg);
+        let sharedKey = this.importKey("jwk",
+            param.sharedKey, {
+                name: "AES-KW"
+            },
+            ["wrapKey", "unwrapKey"]);
+        let encrypter = new Jose.JoseJWE.Encrypter(cryptographer, sharedKey);
+        return encrypter.encrypt(strPlain);
+    },
+    decrypt: function (param, strCrypted) {
+        let sharedKey = param.sharedKey;
+        let cryptographer = new Jose.WebCryptographer();
+        cryptographer.setKeyEncryptionAlgorithm(param.keyEncryptionAlg);
+        cryptographer.setContentEncryptionAlgorithm(param.contentEncryptionAlg);
+        let decrypter = new Jose.JoseJWE.Decrypter(cryptographer, sharedKey);
+        return decrypter.decrypt(strCrypted);
     }
 };

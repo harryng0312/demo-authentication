@@ -1,15 +1,15 @@
-var Authenticator = {
+const Authenticator = {
     loginByUnamePasswd: function (uname, passwd, callback) {
-        var data = {
+        let data = {
             username: uname,
             password: passwd
         };
-        var success = function (data) {
-            var result = (data.result === "0");
+        let success = function (data) {
+            let result = (data.result === "0");
             alert("Login result:" + result);
             callback(result);
         };
-        var error = function (err) {
+        let error = function (err) {
             alert(err);
             console.log("Error:" + err);
             callback(false);
@@ -17,27 +17,27 @@ var Authenticator = {
         FormUtil.postJson("login", data, success, error);
     },
     loginByECDH: function (uname, passwd, callback) {
-        var promise = new Promise(function (resolve, reject) {
+        let promise = new Promise(function (resolve, reject) {
             resolve(passwd)
         });
         promise.then(async function (val) {
-            var data = DataUtil.strToBytes(val);
+            let data = DataUtil.strToBytes(val);
             const hashPasswd = await HCrypto.hash("SHA-256", data);
             console.log("Hashed passwd:" + hashPasswd);
-            var sqrHashedPwd = DataUtil.bytesToBigInt(DataUtil.base64ToBytes(hashPasswd)).pow(2);
+            let sqrHashedPwd = DataUtil.bytesToBigInt(DataUtil.base64ToBytes(hashPasswd)).pow(2);
             console.log("Num passwd:" + sqrHashedPwd);
             const dhParams = {
                 name: "ECDH",
                 namedCurve: "P-256"
             };
             const keyPair = await HCrypto.generateKey(dhParams, ["deriveKey", "deriveBits"]);
-            var priKey = keyPair.privateKey;
-            var pubKey = keyPair.publicKey;
-            var priKeyData = await HCrypto.exportKey("jwk", priKey);
-            var pubKeyData = await HCrypto.exportKey("jwk", pubKey);
+            let priKey = keyPair.privateKey;
+            let pubKey = keyPair.publicKey;
+            let priKeyData = await HCrypto.exportKey("jwk", priKey);
+            let pubKeyData = await HCrypto.exportKey("jwk", pubKey);
             console.log("Pri Key:" + JSON.stringify(priKeyData));
             console.log("Pub Key:" + JSON.stringify(pubKeyData));
-            var commonSecretKey = await HCrypto.deriveKey({
+            let commonSecretKey = await HCrypto.deriveKey({
                     name: "ECDH",
                     namedCurve: "P-256",
                     public: pubKey
@@ -47,25 +47,25 @@ var Authenticator = {
                     name: "AES-CTR",
                     length: 256
                 }, ["encrypt", "decrypt"]);
-            var keyData = await HCrypto.exportKey("jwk", commonSecretKey);
+            let keyData = await HCrypto.exportKey("jwk", commonSecretKey);
             console.log("Common Key:" + JSON.stringify(keyData));
         }).catch(function (err) {
             alert(err);
         });
     },
     loginByPBKDF2: function (uname, passwd, callback) {
-        var salt = DataUtil.strToBytes("0000");
-        var iterations = 10240;
-        var promise = new Promise(function (resolve, reject) {
+        let salt = DataUtil.strToBytes("0000");
+        let iterations = 10240;
+        let promise = new Promise(function (resolve, reject) {
             resolve(passwd)
         });
         promise.then(async function (val) {
-            var passwdBin = DataUtil.strToBytes(val);
-            var key = await HCrypto.importKey("raw",
+            let passwdBin = DataUtil.strToBytes(val);
+            let key = await HCrypto.importKey("raw",
                 passwdBin,
                 {name: "PBKDF2"},
                 ['deriveKey', 'deriveBits']);
-            var webKey = await HCrypto.deriveKey({
+            let webKey = await HCrypto.deriveKey({
                     name: "PBKDF2",
                     salt: salt,
                     iterations: iterations,
@@ -73,8 +73,17 @@ var Authenticator = {
                 }, key,
                 {name: "AES-CBC", length: 128},
                 ["encrypt", "decrypt"]);
-            var sKey = await HCrypto.exportKey("raw", webKey);
+            let sKey = await HCrypto.exportKey("raw", webKey);
             console.log("Secret key:" + DataUtil.bytesToBase64(sKey));
+            let param = {
+                keyEncryptionAlg: "A128KW",
+                contentEncryptionAlg: "A128CBC-HS256",
+                sharedKey: {"kty":"oct", "k":DataUtil.bytesToBase64Url(sKey)}
+            };
+            // var shared_key = {"kty":"oct", "k":"GawgguFyGrWKav7AX4VKUg"};
+            // shared_key = crypto.subtle.importKey("jwk", shared_key, {name: "AES-KW"}, true, ["wrapKey", "unwrapKey"]);
+            let unameEnc = await HCrypto.encrypt(param, uname);
+            console.log("Username enc:" + unameEnc);
         }).catch(function (err) {
             console.log(err);
         });
