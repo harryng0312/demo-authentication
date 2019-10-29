@@ -77,7 +77,7 @@ const Authenticator = {
             console.log("Secret key:" + DataUtil.bytesToBase64(sKey));
             let param = {
                 keyEncryptionAlg: "A128KW",
-                contentEncryptionAlg: "A128GCM",
+                contentEncryptionAlg: "A128CBC-HS256",
                 algName: "AES-KW",
                 sharedKey: {"kty": "oct", "k": DataUtil.bytesToBase64Url(sKey)}
             };
