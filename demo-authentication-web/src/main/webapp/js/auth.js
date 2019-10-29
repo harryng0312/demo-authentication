@@ -77,9 +77,9 @@ const Authenticator = {
             console.log("Secret key:" + DataUtil.bytesToBase64(sKey));
             let param = {
                 keyEncryptionAlg: "A128KW",
-                contentEncryptionAlg: "A128CBC-HS256",
+                contentEncryptionAlg: "A128GCM",
                 algName: "AES-KW",
-                sharedKey: {"kty":"oct", "k":DataUtil.bytesToBase64Url(sKey)}
+                sharedKey: {"kty": "oct", "k": DataUtil.bytesToBase64Url(sKey)}
             };
             // var shared_key = {"kty":"oct", "k":"GawgguFyGrWKav7AX4VKUg"};
             // shared_key = crypto.subtle.importKey("jwk", shared_key, {name: "AES-KW"}, true, ["wrapKey", "unwrapKey"]);
