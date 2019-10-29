@@ -60,17 +60,21 @@ const HCrypto = {
         cryptographer.setContentEncryptionAlgorithm(param.contentEncryptionAlg);
         let sharedKey = this.importKey("jwk",
             param.sharedKey, {
-                name: "AES-KW"
+                name: param.algName
             },
             ["wrapKey", "unwrapKey"]);
         let encrypter = new Jose.JoseJWE.Encrypter(cryptographer, sharedKey);
         return encrypter.encrypt(strPlain);
     },
     decryptJwt: function (param, strCrypted) {
-        let sharedKey = param.sharedKey;
         let cryptographer = new Jose.WebCryptographer();
         cryptographer.setKeyEncryptionAlgorithm(param.keyEncryptionAlg);
         cryptographer.setContentEncryptionAlgorithm(param.contentEncryptionAlg);
+        let sharedKey = this.importKey("jwk",
+            param.sharedKey, {
+                name: param.algName
+            },
+            ["wrapKey", "unwrapKey"]);
         let decrypter = new Jose.JoseJWE.Decrypter(cryptographer, sharedKey);
         return decrypter.decrypt(strCrypted);
     }

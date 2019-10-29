@@ -78,12 +78,15 @@ const Authenticator = {
             let param = {
                 keyEncryptionAlg: "A128KW",
                 contentEncryptionAlg: "A128CBC-HS256",
+                algName: "AES-KW",
                 sharedKey: {"kty":"oct", "k":DataUtil.bytesToBase64Url(sKey)}
             };
             // var shared_key = {"kty":"oct", "k":"GawgguFyGrWKav7AX4VKUg"};
             // shared_key = crypto.subtle.importKey("jwk", shared_key, {name: "AES-KW"}, true, ["wrapKey", "unwrapKey"]);
             let unameEnc = await HCrypto.encryptJwt(param, uname);
             console.log("Username enc:" + unameEnc);
+            let unameDec = await HCrypto.decryptJwt(param, unameEnc);
+            console.log("Username dec:" + unameDec);
         }).catch(function (err) {
             console.log(err);
         });
