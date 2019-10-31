@@ -59,7 +59,7 @@ const HCrypto = {
         cryptographer.setKeyEncryptionAlgorithm(param.keyEncryptionAlg);
         cryptographer.setContentEncryptionAlgorithm(param.contentEncryptionAlg);
         let sharedKey = this.importKey("jwk",
-            param.sharedKey, {
+            param.kwk, {
                 name: param.algName
             },
             ["wrapKey", "unwrapKey"]);
@@ -71,7 +71,7 @@ const HCrypto = {
         cryptographer.setKeyEncryptionAlgorithm(param.keyEncryptionAlg);
         cryptographer.setContentEncryptionAlgorithm(param.contentEncryptionAlg);
         let sharedKey = this.importKey("jwk",
-            param.sharedKey, {
+            param.kwk, {
                 name: param.algName
             },
             ["wrapKey", "unwrapKey"]);

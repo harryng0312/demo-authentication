@@ -71,15 +71,18 @@ const Authenticator = {
                     iterations: iterations,
                     hash: "SHA-256"
                 }, key,
-                {name: "AES-CBC", length: 128},
-                ["encrypt", "decrypt"]);
-            let sKey = await HCrypto.exportKey("raw", webKey);
-            console.log("Secret key:" + DataUtil.bytesToBase64(sKey));
+                {name: "AES-KW", length: 128},
+                ["wrapKey", "unwrapKey"]);
+            // let sKey = await HCrypto.exportKey("raw", webKey);
+            // console.log("Secret key:" + DataUtil.bytesToBase64Url(sKey));
+            let sKey = await HCrypto.exportKey("jwk", webKey);
+            console.log("Secret key:" + sKey);
             let param = {
                 keyEncryptionAlg: "A128KW",
                 contentEncryptionAlg: "A128CBC-HS256",
                 algName: "AES-KW",
-                sharedKey: {"kty": "oct", "k": DataUtil.bytesToBase64Url(sKey)}
+                // kwk: {"kty": "oct", "k": DataUtil.bytesToBase64Url(sKey)}
+                kwk: sKey
             };
             // var shared_key = {"kty":"oct", "k":"GawgguFyGrWKav7AX4VKUg"};
             // shared_key = crypto.subtle.importKey("jwk", shared_key, {name: "AES-KW"}, true, ["wrapKey", "unwrapKey"]);
