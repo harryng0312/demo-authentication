@@ -69,6 +69,14 @@ public class AuthController {
         return rs;
     }
 
+    @RequestMapping(value = "/postUsername", method = RequestMethod.GET)
+    public String postUsername(@RequestParam(name="uname", defaultValue = "") String username){
+        String rs = "";
+        // check username is existed
+        // generate salts for username and password
+        return rs;
+    }
+
     @RequestMapping(value = "/welcome", method = RequestMethod.GET)
     public String welcome() {
         return "auth/welcome";
