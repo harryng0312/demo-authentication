@@ -11,8 +11,8 @@ plugins {
 }
 
 dependencies {
-    compile project(':demo-authentication-api')
-    compile project(':demo-authentication-impl')
+    implementation project(':demo-authentication-api')
+    implementation project(':demo-authentication-impl')
 
     implementation 'org.springframework.boot:spring-boot'
     implementation 'org.springframework.boot:spring-boot-starter'
