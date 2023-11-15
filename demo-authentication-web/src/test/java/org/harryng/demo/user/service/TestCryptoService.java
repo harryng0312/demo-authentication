@@ -3,16 +3,13 @@ package org.harryng.demo.user.service;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Hex;
 import org.harryng.demo.main.Application;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;
@@ -28,9 +25,9 @@ import java.security.spec.KeySpec;
 import java.util.Base64;
 import java.util.Calendar;
 
-@RunWith(SpringRunner.class)
+//@RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
-@Import(Application.class)
+//@Import(Application.class)
 public class TestCryptoService {
 
     static Logger logger = LoggerFactory.getLogger(TestCryptoService.class);
@@ -38,7 +35,7 @@ public class TestCryptoService {
     @Autowired
     private ApplicationContext applicationContext;
 
-    @Before
+    @BeforeEach
     public void init() {
         Provider provider = new BouncyCastleProvider();
         Security.insertProviderAt(provider, 1);
@@ -119,5 +116,10 @@ public class TestCryptoService {
         logger.info("=====");
         String dataStr = "abcdefghijklmnopqrstuvwxyz0123456789";
         logger.info("Crypted data:" + Base64.getEncoder().encodeToString(aesCipher.doFinal(dataStr.getBytes())));
+    }
+
+    @Test
+    public void testPrint(){
+        logger.info("=====");
     }
 }

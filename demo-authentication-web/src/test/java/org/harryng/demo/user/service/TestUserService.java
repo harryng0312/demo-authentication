@@ -1,31 +1,28 @@
 package org.harryng.demo.user.service;
 
+import jakarta.annotation.Resource;
 import org.harryng.demo.main.Application;
 import org.harryng.demo.user.pojo.entity.UserImpl;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Calendar;
 import java.util.Date;
 
-@RunWith(SpringRunner.class)
+//@RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
-@Import(Application.class)
+//@Import(Application.class)
 public class TestUserService {
 
     static Logger logger = LoggerFactory.getLogger(TestUserService.class);
 
-    @Autowired
+    @Resource
     private ApplicationContext applicationContext;
 
-    @Autowired
+    @Resource
     private UserService userService;
 
     @Test
