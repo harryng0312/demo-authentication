@@ -1,6 +1,8 @@
 package org.harryng.demo.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.harryng.demo.auth.pojo.text.AuthenticationInfo;
 import org.harryng.demo.auth.service.AuthService;
 import org.harryng.demo.session.SessionHolder;
@@ -8,22 +10,19 @@ import org.harryng.demo.user.pojo.entity.UserImpl;
 import org.harryng.demo.util.TextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class AuthController {
 
     static Logger logger = LoggerFactory.getLogger(AuthController.class);
 
-    @Autowired
+    @Resource
     protected HttpServletRequest request;
 
-    @Autowired
+    @Resource
     protected AuthService authService;
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -70,7 +69,7 @@ public class AuthController {
     }
 
     @RequestMapping(value = "/postUsername", method = RequestMethod.GET)
-    public String postUsername(@RequestParam(name="uname", defaultValue = "") String username){
+    public String postUsername(@RequestParam(name = "uname", defaultValue = "") String username) {
         String rs = "";
         // check username is existed
         // generate salts for username and password

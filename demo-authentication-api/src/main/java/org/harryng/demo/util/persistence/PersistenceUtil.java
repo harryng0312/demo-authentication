@@ -3,9 +3,9 @@ package org.harryng.demo.util.persistence;
 import org.harryng.demo.util.PageInfo;
 import org.harryng.demo.util.PageResult;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaQuery;
 
 public class PersistenceUtil {
 

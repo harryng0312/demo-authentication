@@ -5,7 +5,7 @@ import org.harryng.demo.base.pojo.entity.BaseEntity;
 import org.harryng.demo.util.PageInfo;
 import org.harryng.demo.util.PageResult;
 
-import javax.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaQuery;
 
 public abstract class AbstractSearchableService<Id extends Object, T extends BaseEntity<Id>> extends AbstractService<Id, T> implements BaseSearchableService<Id, T> {
 

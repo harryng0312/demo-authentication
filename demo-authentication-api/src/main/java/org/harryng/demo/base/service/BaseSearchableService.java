@@ -4,7 +4,7 @@ import org.harryng.demo.base.pojo.entity.BaseEntity;
 import org.harryng.demo.util.PageInfo;
 import org.harryng.demo.util.PageResult;
 
-import javax.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaQuery;
 
 public interface BaseSearchableService<Id extends Object, T extends BaseEntity<Id>> extends BaseService<Id, T> {
     PageResult<T> findByConditions(PageInfo pageInfo, CriteriaQuery<T> criteriaQuery) throws RuntimeException, Exception;

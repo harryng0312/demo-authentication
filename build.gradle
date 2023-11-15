@@ -12,14 +12,16 @@ allprojects {
 //        jcenter()
 //        mavenLocal()
     }
+
     dependencies {
-        implementation 'org.slf4j:slf4j-api:1.7.28'
-        implementation 'log4j:log4j:1.2.17'
-        testImplementation 'junit:junit:4.12'
+//        implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+//        implementation "org.springframework.boot:spring-boot-starter-log4j2:${springbootVersion}"
+        testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
     }
-    group 'org.hikarikyou.demo'
+    group 'org.harryng.demo'
     version '1.0-SNAPSHOT'
-    sourceCompatibility = "11"
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 

@@ -8,9 +8,9 @@ import org.harryng.demo.util.PageInfo;
 import org.harryng.demo.util.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
 public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> implements UserService {
 

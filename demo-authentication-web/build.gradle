@@ -1,48 +1,49 @@
 buildscript {
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.8.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springbootVersion}")
     }
 }
 plugins {
-    id 'org.springframework.boot' version '2.1.8.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'org.springframework.boot' version "${springbootVersion}"
+    id 'io.spring.dependency-management' version '1.1.4'
     id 'java'
     id 'war'
 }
 
 dependencies {
-    implementation project(':demo-authentication-api')
-    implementation project(':demo-authentication-impl')
+    implementation project(":demo-authentication-api")
+    implementation project(":demo-authentication-impl")
 
-    implementation 'org.springframework.boot:spring-boot'
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-integration'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-web-services'
+    implementation "org.springframework.boot:spring-boot"
+    implementation "org.springframework.boot:spring-boot-starter"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-data-jdbc"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.springframework.boot:spring-boot-starter-integration"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-web-services"
+    implementation "org.springframework.boot:spring-boot-starter-websocket"
 
-    implementation 'org.apache.commons:commons-dbcp2:' + apacheCommonVersion
-    implementation 'org.apache.commons:commons-pool2:' + apacheCommonVersion
+    implementation "org.apache.commons:commons-dbcp2:${apacheCommonVersion}"
+    implementation "org.apache.commons:commons-pool2:${apacheCommonVersion}"
 
-    implementation 'javax.servlet:jstl:' + jstlVersion
-    implementation 'org.aspectj:aspectjrt:' + aspectjVersion
-    implementation 'org.aspectj:aspectjweaver:' + aspectjVersion
+    implementation "javax.servlet:jstl:${jstlVersion}"
+    implementation "org.aspectj:aspectjrt:${aspectjVersion}"
+    implementation "org.aspectj:aspectjweaver:${aspectjVersion}"
 
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    implementation 'org.bouncycastle:bcprov-jdk15on:' + bouncycastleVersion
-    implementation 'com.fasterxml.jackson.core:jackson-databind:' + jacksonVersion
-    implementation 'com.nimbusds:nimbus-jose-jwt:' + nimbusJoseVersion
+//    implementation "org.bouncycastle:bcprov-jdk15on:${bouncycastleVersion}"
+    implementation "org.bouncycastle:bcprov-jdk18on:${bouncycastleVersion}"
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    implementation "com.nimbusds:nimbus-jose-jwt:${nimbusJoseVersion}"
 
-//    runtimeOnly 'com.h2database:h2'
-    runtimeOnly 'org.postgresql:postgresql'
-    providedRuntime 'org.apache.tomcat.embed:tomcat-embed-jasper:' + tomcatVersion
-    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+//    runtimeOnly "com.h2database:h2"
+    runtimeOnly "org.postgresql:postgresql"
+    providedRuntime "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
+    providedRuntime "org.springframework.boot:spring-boot-starter-tomcat"
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.integration:spring-integration-test'
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.springframework.integration:spring-integration-test"
 
-//    testCompile group: 'junit', name: 'junit', version: '4.11'
-//    testCompile group: 'junit', name: 'junit', version: '4.12'
+//    testCompile group: "junit", name: "junit", version: "4.11"
+//    testCompile group: "junit", name: "junit", version: "4.12"
 }

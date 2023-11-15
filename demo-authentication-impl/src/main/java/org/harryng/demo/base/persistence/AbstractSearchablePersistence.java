@@ -5,8 +5,8 @@ import org.harryng.demo.util.PageInfo;
 import org.harryng.demo.util.PageResult;
 import org.harryng.demo.util.persistence.PersistenceUtil;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaQuery;
 
 public abstract class AbstractSearchablePersistence<Id extends Object, T extends BaseEntity<Id>> extends AbstractPersistence<Id, T> implements BaseSearchablePersistence<Id, T> {
 

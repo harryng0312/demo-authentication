@@ -1,12 +1,25 @@
 plugins {
+    id 'org.springframework.boot' version "${springbootVersion}"
+    id 'io.spring.dependency-management' version '1.1.4'
     id 'java'
+}
+group 'org.harryng.demo'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = JavaVersion.VERSION_17
+repositories {
+    mavenCentral()
 }
 
 dependencies {
     implementation project(':demo-authentication-api')
-    implementation 'org.springframework:spring-context:5.2+'
-    implementation 'org.springframework:spring-beans:5.2+'
-    implementation 'javax.persistence:javax.persistence-api:2+'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:' + jacksonVersion
+//    implementation 'org.springframework:spring-context:5.2+'
+//    implementation 'org.springframework:spring-beans:5.2+'
+//    implementation 'javax.persistence:javax.persistence-api:2+'
+//    implementation "org.springframework.boot:spring-boot"
+//    compileOnly "org.springframework.boot:spring-boot:${springbootVersion}"
+    compileOnly "org.springframework.boot:spring-boot-starter"
+    compileOnly "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
 //    testCompile group: 'junit', name: 'junit', version: '4.12'
 }
