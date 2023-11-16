@@ -16,14 +16,15 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
-import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.ECGenParameterSpec;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
+import java.security.spec.*;
 import java.util.Base64;
 import java.util.Calendar;
+import java.util.HexFormat;
 
 //@RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -119,7 +120,119 @@ public class TestCryptoService {
     }
 
     @Test
-    public void testPrint(){
-        logger.info("=====");
+    public void testGenerateKeyPair() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException, InvalidParameterSpecException {
+        logger.info("Java generate an EC keypair");
+        String ecdhCurvenameString = "secp256r1";
+        // standard curvennames
+        // secp256r1 [NIST P-256, X9.62 prime256v1]
+        // secp384r1 [NIST P-384]
+        // secp521r1 [NIST P-521]
+
+        final byte[] seedArr = "01f82bfb2f0a3e988adc3d053d8e6ff878154306e402d871b7d6000823a1397f".getBytes();
+//        ECPoint point = new ECPoint(new BigInteger(hexX, 16), new BigInteger(hexY, 16));
+
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC");
+        ECGenParameterSpec ecParameterSpec = new ECGenParameterSpec(ecdhCurvenameString);
+
+//        AlgorithmParameters parameters = AlgorithmParameters.getInstance("EC", "SunEC");
+//        ECParameterSpec ecParameters = parameters.getParameterSpec(ECParameterSpec.class);
+//        ECPrivateKeySpec privateKeySpec = new ECPrivateKeySpec(point, ecParameters);
+//        ECPublicKeySpec pubKeySpec = new ECPublicKeySpec(point, ecParameters);
+
+        final Provider provider = new BouncyCastleProvider();
+
+        final SecureRandom secureRandom = SecureRandom.getInstance("DRBG");
+//        final SecureRandom secureRandom = SecureRandom.getInstance("DEFAULT", provider);
+        secureRandom.setSeed(seedArr);
+        keyPairGenerator.initialize(ecParameterSpec, secureRandom);
+//        keyPairGenerator.initialize(ecParameterSpec);
+        KeyPair ecdhKeyPair = keyPairGenerator.genKeyPair();
+        PrivateKey privateKey = ecdhKeyPair.getPrivate();
+        PublicKey publicKey = ecdhKeyPair.getPublic();
+        logger.info("privateKey: " + Base64.getEncoder().encodeToString(privateKey.getEncoded()));
+        logger.info("publicKey: " + Base64.getEncoder().encodeToString(publicKey.getEncoded()));
+    }
+
+    @Test
+    public void testKeyAgreement() throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, IOException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+        final String userPasswd = "P@ssw0rd";
+        final byte[] secretSeed = "0123456789abcdef".getBytes();
+        final String ecdhCurveName = "secp256k1";
+//        final String ecdhCurveName = "secp256r1";
+        // client side
+        final KeyPairGenerator clientKeyPairGenerator = KeyPairGenerator.getInstance("EC");
+        final ECGenParameterSpec clientEcParamSpec = new ECGenParameterSpec(ecdhCurveName);
+        final KeyPair clientKeyPair = clientKeyPairGenerator.generateKeyPair();
+        final PrivateKey clientPriKey = clientKeyPair.getPrivate();
+        final PublicKey clientPubKey = clientKeyPair.getPublic();
+        final byte[] clientPubKeyBytes = clientPubKey.getEncoded();
+        logger.info("client PublicKey:" + HexFormat.of().formatHex(clientPubKey.getEncoded()));
+
+        // server side
+        final SecureRandom serverRand = SecureRandom.getInstance("DRBG");
+        final var sessionIdBytes = new byte[20];
+        final var randomNoBytes = new byte[20];
+        serverRand.nextBytes(sessionIdBytes);
+        serverRand.nextBytes(randomNoBytes);
+        final String sessionId = HexFormat.of().formatHex(sessionIdBytes);
+        final String randomNo = HexFormat.of().formatHex(randomNoBytes);
+
+        final KeyPairGenerator serverKeyPairGenerator = KeyPairGenerator.getInstance("EC");
+        final ECGenParameterSpec serverEcParamSpec = new ECGenParameterSpec(ecdhCurveName);
+        final KeyPair serverKeyPair = serverKeyPairGenerator.generateKeyPair();
+        final PrivateKey serverPriKey = serverKeyPair.getPrivate();
+        final PublicKey serverPubKey = serverKeyPair.getPublic();
+        final byte[] serverPubKeyBytes = serverPubKey.getEncoded();
+
+        // after client sent to server, run on server:
+        final KeyFactory serverKeyFactory = KeyFactory.getInstance("EC");
+        final EncodedKeySpec clientPubKey2Spec = new X509EncodedKeySpec(clientPubKeyBytes);
+        final PublicKey clientPubKey2 = serverKeyFactory.generatePublic(clientPubKey2Spec);
+        logger.info("client PublicKey sent to server:" + HexFormat.of().formatHex(clientPubKey2.getEncoded()));
+        final KeyAgreement serverKeyAgreement = KeyAgreement.getInstance("ECDH");
+        serverKeyAgreement.init(serverPriKey);
+        serverKeyAgreement.doPhase(clientPubKey2, true);
+        byte[] serverSecretKeyBytes = serverKeyAgreement.generateSecret();
+        logger.info("SecretKey on server:" + HexFormat.of().formatHex(serverSecretKeyBytes));
+
+        // after server returned to client
+        final KeyFactory clientKeyFactory = KeyFactory.getInstance("EC");
+        final EncodedKeySpec serverPubKey2Spec = new X509EncodedKeySpec(serverPubKeyBytes);
+        final PublicKey serverPubKey2 = clientKeyFactory.generatePublic(serverPubKey2Spec);
+        logger.info("server PublicKey returned to client:" + HexFormat.of().formatHex(serverPubKey2.getEncoded()));
+        final KeyAgreement clientKeyAgreement = KeyAgreement.getInstance("ECDH");
+        clientKeyAgreement.init(clientPriKey);
+        clientKeyAgreement.doPhase(serverPubKey2, true);
+        byte[] clientSecretKeyBytes = clientKeyAgreement.generateSecret();
+        logger.info("SecretKey on client:" + HexFormat.of().formatHex(clientSecretKeyBytes));
+
+        // summary
+        final var bos = new ByteArrayOutputStream();
+        bos.write(sessionId.getBytes());
+//        bos.write(randomNo.getBytes());
+        bos.write(clientSecretKeyBytes);
+
+        // create secretkey for AES256
+        final MessageDigest md = MessageDigest.getInstance("SHA-256");
+        final byte[] sharedSecretKeyBytes = md.digest(bos.toByteArray());
+        md.reset();
+        final byte[] ivBytes = md.digest(randomNo.getBytes());
+        logger.info("SharedSecretKey len:" + sharedSecretKeyBytes.length);
+
+        // AES256GCM
+        final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        final SecretKey sharedSecretKey = new SecretKeySpec(sharedSecretKeyBytes, "AES");
+        final IvParameterSpec iv = new IvParameterSpec(ivBytes);
+        cipher.init(Cipher.ENCRYPT_MODE, sharedSecretKey, iv);
+
+        // encrypt
+        final var encryptedPasswd = cipher.doFinal(userPasswd.getBytes(StandardCharsets.UTF_8));
+
+        // decrypt
+        cipher.init(Cipher.DECRYPT_MODE, sharedSecretKey, iv);
+        final var orgUserPasswd = cipher.doFinal(encryptedPasswd);
+
+        logger.info("OrgUserPasswd:" + new String(orgUserPasswd, StandardCharsets.UTF_8));
+
     }
 }
