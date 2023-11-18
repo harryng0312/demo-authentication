@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.*;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.HexFormat;
@@ -209,15 +210,17 @@ public class TestCryptoService {
         // summary
         final var bos = new ByteArrayOutputStream();
         bos.write(sessionId.getBytes());
-//        bos.write(randomNo.getBytes());
+        bos.write(randomNo.getBytes());
         bos.write(clientSecretKeyBytes);
 
         // create secretkey for AES256
         final MessageDigest md = MessageDigest.getInstance("SHA-256");
-        final byte[] sharedSecretKeyBytes = md.digest(bos.toByteArray());
+        final byte[] keyMaterial = md.digest(bos.toByteArray());
         md.reset();
-        final byte[] ivBytes = md.digest(randomNo.getBytes());
+        final byte[] sharedSecretKeyBytes = Arrays.copyOfRange(keyMaterial, 0, 256 / 16);
+        final byte[] ivBytes = Arrays.copyOfRange(keyMaterial, 256 / 16, 256 / 8);
         logger.info("SharedSecretKey len:" + sharedSecretKeyBytes.length);
+        logger.info("ivBytes len:" + ivBytes.length);
 
         // AES256GCM
         final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
@@ -227,6 +230,7 @@ public class TestCryptoService {
 
         // encrypt
         final var encryptedPasswd = cipher.doFinal(userPasswd.getBytes(StandardCharsets.UTF_8));
+        logger.info("EncryptedPasswd:" + HexFormat.of().formatHex(encryptedPasswd));
 
         // decrypt
         cipher.init(Cipher.DECRYPT_MODE, sharedSecretKey, iv);
